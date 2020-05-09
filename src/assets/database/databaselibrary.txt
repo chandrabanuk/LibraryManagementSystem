@@ -1,0 +1,158 @@
+drop database if exists libraryManagementSystem;
+
+create database libraryManagementSystem;
+
+use libraryManagementSystem;
+
+create table member(
+	mid int auto_increment,
+	name varchar(50),
+	nic varchar(20)NOT NULL,
+	address varchar(100),
+	contact int,
+	email varchar(30),
+	dob date,
+	gender varchar(20),
+	member_type varchar(30),
+	CONSTRAINT PRIMARY KEY(mid)
+)ENGINE=InnoDB;
+
+insert into member values(mid,'Prabahvi Ranaweera','971410231v','Mathugama',0712345671,'prabhvi17@gmail.com','1997-06-25','Female','other');
+insert into member values(mid,'Nate Diaz','971610241v','Stockton',0752344671,'Nate7@gmail.com','1987-06-25','Male','other');
+insert into member values(mid,'Conor Mcgregor','971660291v','Ireland',0758364671,'Conor@gmail.com','1987-03-22','Male','other');
+insert into member values(mid,'tony ferguson','881665291v','America',0768364679,'Tony@gmail.com','1988-06-21','Male','other');
+insert into member values(mid,'Carl Johnson','881765292v','America',0763364673,'Carl@gmail.com','1988-09-12','Male','other');
+
+
+create table author(
+	aid int auto_increment,
+	name varchar(50),
+	CONSTRAINT PRIMARY KEY(aid)
+)ENGINE=InnoDB;
+
+insert into author values(aid,'Sir Author Conan Doyle');
+insert into author values(aid,'Fyodor Dostoyevsky');
+insert into author values(aid,'J. K. Rowling');
+insert into author values(aid,'kumaratunga Munidasa');
+insert into author values(aid,'Edgar Allan Poe');
+insert into author values(aid,'William Shakespeare');
+insert into author values(aid,'Charles Dickens');
+
+
+create table publisher(
+	pid int auto_increment,
+	name varchar(50),
+	contact int,
+	CONSTRAINT PRIMARY KEY(pid)
+)ENGINE=InnoDB;
+
+insert into publisher values(pid,'Gunasena Publishers', 0771254376);
+insert into publisher values(pid,'Sarasavi Publishers', 0711270153);
+insert into publisher values(pid,'Wasana Publishers', 0711174133);
+
+create table section(
+	sid int auto_increment,
+	description varchar(30),
+	CONSTRAINT PRIMARY KEY(sid)
+)ENGINE=InnoDB;
+
+insert into section values(sid,'Section A');
+insert into section values(sid,'Section B');
+insert into section values(sid,'Section c');
+
+create table type(
+	tid int auto_increment,
+	sid int,
+	name varchar(30),
+	CONSTRAINT PRIMARY KEY(tid),
+	CONSTRAINT FOREIGN KEY(sid) REFERENCES section(sid)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
+
+insert into type values(tid,1,'Novel');
+insert into type values(tid,2,'Poetry');
+insert into type values(tid,2,'Action and adventure');
+insert into type values(tid,2,'Romance');
+
+create table account(
+	account_id int Auto_increment,
+	password varchar(20),
+	name varchar(50),
+	CONSTRAINT PRIMARY KEY(account_id)
+)ENGINE=InnoDB;
+
+insert into account values(account_id,'pass1','k.Silva');
+insert into account values(account_id,'pass2','S.Perera');
+
+create table receptionist(
+	rid int auto_increment,
+	name varchar(50),
+	nic varchar(10)NOT NULL,
+	address varchar(100),
+	contact int,
+	gender varchar(20),
+	account_id int,
+	CONSTRAINT PRIMARY KEY(rid),
+	CONSTRAINT FOREIGN KEY(account_id) REFERENCES account(account_id)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
+
+insert into receptionist values(rid,'K.Silva','881230987v','Horana',0786534297,'Male',1);
+insert into receptionist values(rid,'S.Perera','891248981v','Mathugama',0776436217,'Male',2);
+
+create table book(
+	bid int auto_increment,
+	price decimal(10,2),
+	Title varchar(50),
+	aid int,
+	tid int,
+	pid int,
+	availability varchar(10),
+	CONSTRAINT PRIMARY KEY(bid),
+	CONSTRAINT FOREIGN KEY(aid) REFERENCES author(aid)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FOREIGN KEY(tid) REFERENCES type(tid)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FOREIGN KEY(pid) REFERENCES publisher(pid)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
+
+insert into book values(bid,250.00,'A Study in Scarlet',1,1,1,'yes');
+insert into book values(bid,3000.00,'Crime and Punishment',2,3,2,'yes');
+insert into book values(bid,1750.00,'Philosophers Stone',3,1,3,'yes');
+insert into book values(bid,1550.00,'Deathly Hallows',3,1,3,'yes');
+insert into book values(bid,400.00,'Heen Saraya',4,1,1,'yes');
+insert into book values(bid,750.00,'The Raven',5,1,1,'yes');
+insert into book values(bid,750.00,'The Black Cat',5,1,1,'yes');
+insert into book values(bid,600.00,'The Gold-Bug',5,1,1,'yes');
+insert into book values(bid,2000.00,'Hamlet',6,2,3,'yes');
+insert into book values(bid,2500.00,'Romeo and Juliet',6,2,3,'yes');
+insert into book values(bid,1000.00,'Macbeth',6,2,3,'yes');
+insert into book values(bid,800.00,'Great Expectations',7,2,2,'yes');
+insert into book values(bid,750.00,'Oliver Twist',7,2,2,'yes');
+
+create table lend_detail(
+	lid int auto_increment,
+	mid int,
+	bid int,
+	issue_date date,
+	return_date date,
+	due_date date,
+	CONSTRAINT PRIMARY KEY(lid),
+	CONSTRAINT FOREIGN KEY(MID) REFERENCES member(MID)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FOREIGN KEY(BID) REFERENCES book(BID)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
+
+create table fine(
+	fid int auto_increment,
+	amount decimal(10,2),
+	lid int,
+	rid int,
+	CONSTRAINT PRIMARY KEY(fid),
+	CONSTRAINT FOREIGN KEY(rid) REFERENCES receptionist(rid)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FOREIGN KEY(rid) REFERENCES lend_detail(lid)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
